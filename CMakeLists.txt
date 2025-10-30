@@ -25,6 +25,7 @@ pico_sdk_init()
 # --- Source files ---
 add_executable(${PROJECT_NAME}
     main.c
+    # motor_straight_test.c
 )
 
 # --- Add source directory (your modules) ---

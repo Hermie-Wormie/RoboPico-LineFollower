@@ -11,14 +11,28 @@
 volatile bool black_detected = false;
 extern QueueHandle_t barcodes_queue;
 
-void ir_callback(uint gpio, uint32_t events) {
-    if (events & GPIO_IRQ_EDGE_RISE) {
-        black_detected = true; // Rising edge detected - black detected
+// void ir_callback(uint gpio, uint32_t events) {
+//     if (events & GPIO_IRQ_EDGE_RISE) {
+//         printf("IR interrupt! black=%d\n", black_detected);
+//         black_detected = true; // Rising edge detected - black detected
 
-    } else if (events & GPIO_IRQ_EDGE_FALL) {
-        black_detected = false; // Falling edge detected - white detected
+//     } else if (events & GPIO_IRQ_EDGE_FALL) {
+//         black_detected = false; // Falling edge detected - white detected
+//     }
+// }
+
+void ir_callback(uint gpio, uint32_t events) {
+    // Read the live pin state directly every interrupt
+    printf("IR: %d\n", gpio_get(IR_SENSOR));
+
+    if (events & GPIO_IRQ_EDGE_RISE) {
+        black_detected = false; // probably white
+    } 
+    else if (events & GPIO_IRQ_EDGE_FALL) {
+        black_detected = true; // probably black
     }
 }
+
 
 void ir_callback_barcode(uint gpio, uint32_t events) {
 
