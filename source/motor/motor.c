@@ -115,15 +115,16 @@ void motor_stop(void) {
 // ===================================================
 
 void motor_task(void *params) {
+    printf("[MOTOR] Task started!\n");
     const float dt = 0.025f;
     const float reciprocal_dt = 40.0f;
 
     while (1) {
         // Ultrasonic safety
-        if (xSemaphoreTake(UltrasonicWarn_BinarySemaphore, 0) == pdTRUE) {
-            DistanceWarning = true;
-            printf("Distance Warning\n");
-        }
+        // if (xSemaphoreTake(UltrasonicWarn_BinarySemaphore, 0) == pdTRUE) {
+        //     DistanceWarning = true;
+        //     printf("Distance Warning\n");
+        // }
 
         if (APPLY_PID && !DistanceWarning) {
             float actual_speed_motor1 = compute_actual_speed(pulse_width_L);

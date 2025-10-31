@@ -28,22 +28,26 @@ void telemetry_task();
 
 bool HOTSPOT = true;
 
-void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
-    while (1) {
-        printf("STACK OVERFLOW from task: %s (Handle: %p)\n", pcTaskName, (void*)xTask);
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+{
+    while (1)
+    {
+        printf("STACK OVERFLOW from task: %s (Handle: %p)\n", pcTaskName, (void *)xTask);
         sleep_ms(500);
     }
 }
 
-void vApplicationMallocFailedHook(void) {
-    while (1) {
+void vApplicationMallocFailedHook(void)
+{
+    while (1)
+    {
         printf("MALLOC FAILED\n");
         sleep_ms(500);
     }
 }
 
-
-int main(void) {
+int main(void)
+{
     // Initialise everything
     stdio_init_all();
     cyw43_arch_init();
@@ -53,7 +57,10 @@ int main(void) {
 
     // Create queues
     barcodes_queue = xQueueCreate(40, sizeof(uint32_t));
-    encoder_queue  = xQueueCreate(10, sizeof(uint16_t));
+    encoder_queue = xQueueCreate(10, sizeof(uint16_t));
+
+    printf("Free heap before scheduler: %u bytes\n", xPortGetFreeHeapSize());
+
 
     // ---------------- TASK CREATION ----------------
 
@@ -67,7 +74,7 @@ int main(void) {
 
     // Motor control
     xTaskCreate(motor_task, "MotorTask", 1024, NULL, 3, &Motor_T);
-
+    
     // Line following
     xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);
 
@@ -82,5 +89,10 @@ int main(void) {
 
     vTaskStartScheduler();
 
-    while (1) {}
+    while (1)
+    {
+    }
 }
+
+
+

@@ -37,9 +37,16 @@ TimerHandle_t xOffTrackTimer;
 // Slowly speed up to overcome static friction
 void ramp_up()
 {
+
+    float motor1 = 0;
+    float motor2 = 0;
+
     for (int i = 40; i <= 80; i += 2)
     {
-        update_motor_fast(i, i + 1);
+
+        motor1 = i;
+        motor2 = i + 1;
+        update_motor_fast(motor1, motor2);
         vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
@@ -75,9 +82,13 @@ void GetFinalObstacleDistance()
         else
         {
             if (!break_on_next)
+            {
                 break_on_next = true;
+            }
             else
+            {
                 break;
+            }
         }
     }
 
@@ -99,55 +110,67 @@ void vOffTrackTimerCallback(TimerHandle_t xTimer)
 }
 
 // Core line-following logic
-void line_following_task(void *pvParameters)
-{
-    printf("Line Following Started\n");
-    const uint8_t INCREMENT = 5;
-    const uint8_t DECREMENT = 5;
-    uint32_t start_command = false;
+void line_following_task(void *pvParameters) {
+    printf("[LineFollowing] Task started.\n");
 
-    xOffTrackTimer = xTimerCreate("OffTrackResetTimer", pdMS_TO_TICKS(OFFTRACKDELAY), pdFALSE, 0, vOffTrackTimerCallback);
+    // Tunable parameters
+    const float MAX_SPEED = 40.0f;
+    const float MIN_SPEED = 10.0f;
+    const float BASE_SPEED = 20.0f;    // cruising forward speed
+    const float TURN_GAIN = 0.35f;     // how strong the turn effect is (lower = smoother)
+    const float SMOOTHING = 0.2f;      // 0.1–0.3 recommended; lower = slower acceleration
 
-    while (1)
-    {
-        // Main line-following loop
-        static int8_t left_momentum = 20;
-        static int8_t right_momentum = 20;
+    uint32_t debug_counter = 0;
+    float left_speed = BASE_SPEED;
+    float right_speed = BASE_SPEED;
+    float target_left = BASE_SPEED;
+    float target_right = BASE_SPEED;
 
-        // Stop if ultrasonic detects obstacle too close
-        if (xSemaphoreTake(UltrasonicWarn_BinarySemaphore, 0) == pdTRUE)
-        {
+    printf("=== LINE FOLLOWING AUTO-START (Smoothed) ===\n");
+
+    while (1) {
+
+        // --- Safety check ---
+        if (xSemaphoreTake(UltrasonicWarn_BinarySemaphore, 0) == pdTRUE) {
             update_motor_fast(0, 0);
-            printf("Distance Warning! Stopping.\n");
+            printf("Distance Warning, ending line following\n");
             break;
         }
 
-        // IR-based steering logic
-        if (black_detected)
-        {
-            xTimerStart(xOffTrackTimer, 0);
-            left_momentum = (left_momentum > 60) ? 60 : left_momentum;
-            right_momentum = (right_momentum > 60) ? 60 : right_momentum;
-            update_motor_fast(left_momentum, right_momentum);
-            left_momentum -= DECREMENT;
-            right_momentum += INCREMENT;
-        }
-        else
-        {
-            left_momentum = (left_momentum > 60) ? 60 : left_momentum;
-            right_momentum = (right_momentum > 60) ? 60 : right_momentum;
-            update_motor_fast(left_momentum, right_momentum);
-            left_momentum += INCREMENT;
-            right_momentum -= DECREMENT;
+        // --- Read IR ---
+        int line_state = black_detected;  // 1 = black under sensor, 0 = white
+
+        // --- Determine target turn ---
+        if (line_state == 1) {
+            // on black: slightly reduce left speed, increase right
+            target_left = BASE_SPEED * (1.0f - TURN_GAIN);
+            target_right = BASE_SPEED * (1.0f + TURN_GAIN);
+        } else {
+            // on white: slightly increase left speed, reduce right
+            target_left = BASE_SPEED * (1.0f + TURN_GAIN);
+            target_right = BASE_SPEED * (1.0f - TURN_GAIN);
         }
 
-        // Check for task stop notification
-        if (xTaskNotifyWait(0x00, ULONG_MAX, &start_command, 0) == pdPASS)
-        {
-            update_motor_fast(0, 0);
-            break;
+        // --- Clamp target range ---
+        if (target_left > MAX_SPEED) target_left = MAX_SPEED;
+        if (target_left < MIN_SPEED) target_left = MIN_SPEED;
+        if (target_right > MAX_SPEED) target_right = MAX_SPEED;
+        if (target_right < MIN_SPEED) target_right = MIN_SPEED;
+
+        // --- Smooth transition (low-pass filter) ---
+        left_speed = left_speed + SMOOTHING * (target_left - left_speed);
+        right_speed = right_speed + SMOOTHING * (target_right - right_speed);
+
+        // --- Apply to motors ---
+        update_motor_fast((uint16_t)left_speed, (uint16_t)right_speed);
+
+        // --- Debug print every ~500ms ---
+        debug_counter++;
+        if (debug_counter >= 50) {
+            printf("IR:%d | L:%.1f R:%.1f\n", line_state, left_speed, right_speed);
+            debug_counter = 0;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(20));
+        vTaskDelay(pdMS_TO_TICKS(10));  // 100 Hz update rate
     }
 }

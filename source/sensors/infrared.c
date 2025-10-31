@@ -22,16 +22,11 @@ extern QueueHandle_t barcodes_queue;
 // }
 
 void ir_callback(uint gpio, uint32_t events) {
-    // Read the live pin state directly every interrupt
-    printf("IR: %d\n", gpio_get(IR_SENSOR));
-
-    if (events & GPIO_IRQ_EDGE_RISE) {
-        black_detected = false; // probably white
-    } 
-    else if (events & GPIO_IRQ_EDGE_FALL) {
-        black_detected = true; // probably black
-    }
+    bool reading = gpio_get(IR_SENSOR);
+    black_detected = (reading == 1);
+    printf("[IR] gpio=%d reading=%d black_detected=%d\n", gpio, reading, black_detected);
 }
+
 
 
 void ir_callback_barcode(uint gpio, uint32_t events) {

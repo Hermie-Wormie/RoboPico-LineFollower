@@ -48,6 +48,8 @@ void setup_interrupts() {
     gpio_set_pulls(BARCODE_IR_SENSOR, false, true); // pull-down
     gpio_set_dir(IR_SENSOR, GPIO_IN);
     gpio_set_dir(BARCODE_IR_SENSOR, GPIO_IN);
+
+    // Set up interrupts to trigger on both edge
     gpio_set_irq_enabled(BARCODE_IR_SENSOR, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true);
     gpio_set_irq_enabled(IR_SENSOR, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true);
 }
