@@ -6,6 +6,7 @@
 #include "pico/multicore.h"
 #include "hardware/gpio.h"
 #include "header.h"
+#include "motor.h"
 
 // Queues
 QueueHandle_t barcodes_queue = NULL;
@@ -61,6 +62,12 @@ int main(void)
 
     printf("Free heap before scheduler: %u bytes\n", xPortGetFreeHeapSize());
 
+    // ====== SET PID TARGETS HERE ======
+    target_speed_motor1 = 20;  // %
+    target_speed_motor2 = 20;  // %
+    APPLY_PID = true;
+    // ==================================
+
 
     // ---------------- TASK CREATION ----------------
 
@@ -73,7 +80,7 @@ int main(void)
     // xTaskCreate(start_UDP_server_ap, "UDPTask", 1024, NULL, 3, &UDP_T);
 
     // Motor control
-    // xTaskCreate(motor_task, "MotorTask", 1024, NULL, 3, &Motor_T);
+    xTaskCreate(motor_task, "MotorTask", 1024, NULL, 3, &Motor_T);
     
     // // Line following
     // xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);

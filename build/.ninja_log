@@ -409,3 +409,12 @@
 102	410	7836857474645399	CMakeFiles/FreeRTOS_Project.dir/source/sensors/encoder.c.obj	d656b25ce414a7a8
 98	549	7836859060628566	CMakeFiles/FreeRTOS_Project.dir/source/sensors/encoder.c.obj	d656b25ce414a7a8
 550	1416	7836859065236045	FreeRTOS_Project.elf	faa4186690b5ac52
+104	443	7836862288856586	CMakeFiles/FreeRTOS_Project.dir/source/motor/motor.c.obj	a6702de30ecce17
+444	1130	7836862292264847	FreeRTOS_Project.elf	faa4186690b5ac52
+116	517	7836867779775532	CMakeFiles/FreeRTOS_Project.dir/source/motor/motor.c.obj	a6702de30ecce17
+518	1357	7836867783902682	FreeRTOS_Project.elf	faa4186690b5ac52
+130	438	7836869294964683	CMakeFiles/FreeRTOS_Project.dir/source/motor/motor.c.obj	a6702de30ecce17
+118	492	7836869294704829	CMakeFiles/FreeRTOS_Project.dir/main.c.obj	4f9a47c1fa2c842f
+492	1576	7836869298588304	FreeRTOS_Project.elf	faa4186690b5ac52
+39	370	7836871402288166	CMakeFiles/FreeRTOS_Project.dir/source/motor/motor.c.obj	a6702de30ecce17
+371	1052	7836871405592106	FreeRTOS_Project.elf	faa4186690b5ac52

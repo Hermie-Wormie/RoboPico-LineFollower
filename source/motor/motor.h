@@ -31,8 +31,17 @@ extern volatile uint32_t pulse_width_L;
 extern volatile uint32_t pulse_width_R;
 void reset_encoder(void);
 
+extern float target_speed_motor1;
+extern float target_speed_motor2;
+extern bool  APPLY_PID;
+
 // From ultrasonic.c
 extern SemaphoreHandle_t UltrasonicWarn_BinarySemaphore;
+
+// ===========================================================
+// FROM motor.c (needed for PID + encoder debug)
+// ===========================================================
+float compute_actual_speed(uint32_t pulse_width_us);
 
 // ===========================================================
 // FUNCTION PROTOTYPES
