@@ -50,5 +50,6 @@ void motor_init(void);
 void motor_set_speed(int left_speed, int right_speed);
 void motor_stop(void);
 void disable_warning(void);
+void compass_debug_task(void *p);
 
 #endif // MOTOR_H

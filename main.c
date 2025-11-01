@@ -53,6 +53,7 @@ int main(void)
     stdio_init_all();
     cyw43_arch_init();
     motor_init();
+    hmc5883l_init();
     setup_interrupts();
     create_semaphores();
 
@@ -63,8 +64,8 @@ int main(void)
     printf("Free heap before scheduler: %u bytes\n", xPortGetFreeHeapSize());
 
     // ====== SET PID TARGETS HERE ======
-    target_speed_motor1 = 40; // %
-    target_speed_motor2 = 40; // %
+    target_speed_motor1 = 20; // %
+    target_speed_motor2 = 20; // %
     APPLY_PID = true;
     // ==================================
 
@@ -78,11 +79,13 @@ int main(void)
     // // Wi-Fi (Access Point) + UDP Telemetry
     // xTaskCreate(start_UDP_server_ap, "UDPTask", 1024, NULL, 3, &UDP_T);
 
+    xTaskCreate(compass_debug_task, "HMCdbg", 512, NULL, 1, NULL);
+
     // Motor control
     xTaskCreate(motor_task, "MotorTask", 1024, NULL, 3, &Motor_T);
 
-    // // Line following
-    // xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);
+    // Line following
+    xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);
 
     // // Ultrasonic sensor
     // xTaskCreate(ultrasonic_task, "UltrasonicTask", 1024, NULL, 2, &Ultrasonic_T);
@@ -98,22 +101,6 @@ int main(void)
     vTaskStartScheduler();
 
     while (1)
-    {
-    }
-
-    int16_t mx, my, mz;
-
-    while (1)
-    {
-        if (gy511_read_mag(&mx, &my, &mz))
-        {
-            printf("MAG: mx=%d  my=%d  mz=%d\n", mx, my, mz);
-        }
-        else
-        {
-            printf("MAG read fail\n");
-        }
-        sleep_ms(200);
-    }
+    {}
 }
 
