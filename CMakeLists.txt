@@ -25,7 +25,6 @@ pico_sdk_init()
 # --- Source files ---
 add_executable(${PROJECT_NAME}
     main.c
-    # motor_straight_test.c
 )
 
 # --- Add source directory (your modules) ---
@@ -36,6 +35,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}                            # Root (for FreeRTOSConfig.h)
     ${CMAKE_CURRENT_LIST_DIR}/source
     ${CMAKE_CURRENT_LIST_DIR}/source/io
+    ${CMAKE_CURRENT_LIST_DIR}/source/hmc5883l
     ${CMAKE_CURRENT_LIST_DIR}/source/motor
     ${CMAKE_CURRENT_LIST_DIR}/source/networking
     ${CMAKE_CURRENT_LIST_DIR}/source/sensors
@@ -51,6 +51,7 @@ target_link_libraries(${PROJECT_NAME}
     pico_cyw43_arch_lwip_threadsafe_background
     hardware_pwm
     hardware_adc
+    hardware_i2c
 )
 
 # --- Enable USB output, disable UART ---

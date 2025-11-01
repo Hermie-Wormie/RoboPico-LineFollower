@@ -63,11 +63,10 @@ int main(void)
     printf("Free heap before scheduler: %u bytes\n", xPortGetFreeHeapSize());
 
     // ====== SET PID TARGETS HERE ======
-    target_speed_motor1 = 40;  // %
-    target_speed_motor2 = 40;  // %
+    target_speed_motor1 = 40; // %
+    target_speed_motor2 = 40; // %
     APPLY_PID = true;
     // ==================================
-
 
     // ---------------- TASK CREATION ----------------
 
@@ -81,7 +80,7 @@ int main(void)
 
     // Motor control
     xTaskCreate(motor_task, "MotorTask", 1024, NULL, 3, &Motor_T);
-    
+
     // // Line following
     // xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);
 
@@ -94,14 +93,27 @@ int main(void)
     // // Optional telemetry heartbeat
     // xTaskCreate(telemetry_task, "TelemetryTask", 1024, NULL, 1, NULL);
 
-    xTaskCreate(encoder_debug_task, "EncDbg", 512, NULL, 1, NULL);
+    // xTaskCreate(encoder_debug_task, "EncDbg", 512, NULL, 1, NULL);
 
     vTaskStartScheduler();
 
     while (1)
     {
     }
+
+    int16_t mx, my, mz;
+
+    while (1)
+    {
+        if (gy511_read_mag(&mx, &my, &mz))
+        {
+            printf("MAG: mx=%d  my=%d  mz=%d\n", mx, my, mz);
+        }
+        else
+        {
+            printf("MAG read fail\n");
+        }
+        sleep_ms(200);
+    }
 }
-
-
 

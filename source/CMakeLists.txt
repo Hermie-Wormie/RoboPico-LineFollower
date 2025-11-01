@@ -14,6 +14,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     sensors/encoder.c
     sensors/ultrasonic.c
     sensors/infrared.c
+    hmc5883l/hmc5883l.c
     motor/motor.c
 )
 
@@ -22,6 +23,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/io
     ${CMAKE_CURRENT_LIST_DIR}/motor
+    ${CMAKE_CURRENT_LIST_DIR}/hmc5883l
     ${CMAKE_CURRENT_LIST_DIR}/networking
     ${CMAKE_CURRENT_LIST_DIR}/sensors
 )

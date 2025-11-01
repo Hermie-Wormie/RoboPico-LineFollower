@@ -213,10 +213,12 @@ void motor_task(void *params)
             float duty_R = ff_R + pid_R * (255.0f / max_speed_motor1);
             float duty_L = ff_L + pid_L * (255.0f / max_speed_motor2);
 
+            float target_heading = 0.0f;
+
             // balance correction small
             float dv = (vL_f - vR_f);
-            duty_R += dv * 50.0f * -1;
-            duty_L += dv * 50.0f * +1;
+            duty_R += dv * 50.0f;
+            duty_L -= dv * 50.0f;
 
             // floor
             if (target_R > 0.0f)
