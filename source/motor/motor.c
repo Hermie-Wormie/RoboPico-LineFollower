@@ -10,8 +10,8 @@
 #include "motor.h"
 
 // ==== Practical motor constants (tune per robot) ====
-#define MIN_PWM_LEFT    38     // minimal PWM that actually moves LEFT wheel
-#define MIN_PWM_RIGHT   42     // minimal PWM that actually moves RIGHT wheel
+#define MIN_PWM_LEFT    28     // minimal PWM that actually moves LEFT wheel
+#define MIN_PWM_RIGHT   32     // minimal PWM that actually moves RIGHT wheel
 #define MAX_PWM         255
 
 // Low-pass filter for measured speed (to calm jitter)

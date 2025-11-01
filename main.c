@@ -82,8 +82,8 @@ int main(void)
     // Motor control
     xTaskCreate(motor_task, "MotorTask", 1024, NULL, 3, &Motor_T);
     
-    // // Line following
-    // xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);
+    // Line following
+    xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);
 
     // // Ultrasonic sensor
     // xTaskCreate(ultrasonic_task, "UltrasonicTask", 1024, NULL, 2, &Ultrasonic_T);
@@ -94,7 +94,7 @@ int main(void)
     // // Optional telemetry heartbeat
     // xTaskCreate(telemetry_task, "TelemetryTask", 1024, NULL, 1, NULL);
 
-    xTaskCreate(encoder_debug_task, "EncDbg", 512, NULL, 1, NULL);
+    // xTaskCreate(encoder_debug_task, "EncDbg", 512, NULL, 1, NULL);
 
     vTaskStartScheduler();
 

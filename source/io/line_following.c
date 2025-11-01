@@ -114,11 +114,11 @@ void line_following_task(void *pvParameters) {
     printf("[LineFollowing] Task started.\n");
 
     // Tunable parameters
-    const float MAX_SPEED = 40.0f;
-    const float MIN_SPEED = 10.0f;
-    const float BASE_SPEED = 20.0f;    // cruising forward speed
-    const float TURN_GAIN = 0.35f;     // how strong the turn effect is (lower = smoother)
-    const float SMOOTHING = 0.2f;      // 0.1–0.3 recommended; lower = slower acceleration
+    const float MAX_SPEED = 20.0f;
+    const float MIN_SPEED = 5.0f;
+    const float BASE_SPEED = 9.0f;    // cruising forward speed
+    const float TURN_GAIN = 2.0f;     // how strong the turn effect is (lower = smoother)
+    const float SMOOTHING = 0.1f;      // 0.1–0.3 recommended; lower = slower acceleration
 
     uint32_t debug_counter = 0;
     float left_speed = BASE_SPEED;
