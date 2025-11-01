@@ -1,8 +1,8 @@
 #include "lwip/udp.h"
 
 // encoder.c
-#define LEFT_ENCODER 4
-#define RIGHT_ENCODER 6
+#define LEFT_ENCODER 4  //Motor 2
+#define RIGHT_ENCODER 6 //Motor 1
 #define MINIMUM_DEBOUCE 40000
 void encoder_callback_L(uint gpio, uint32_t events);
 void encoder_callback_R(uint gpio, uint32_t events);

@@ -34,17 +34,7 @@ float current_speed = 0;
 
 void init_encoders(void)
 {
-
-    // Motor 1 (left) encoder – GP6
-    gpio_init(LEFT_ENCODER);
-    gpio_set_dir(LEFT_ENCODER, GPIO_IN);
-    gpio_pull_up(LEFT_ENCODER);
-    gpio_set_irq_enabled_with_callback(LEFT_ENCODER,
-                                       GPIO_IRQ_EDGE_FALL,
-                                       true,
-                                       &encoder_callback_L);
-
-    // Motor 2 (right) encoder – GP4
+    // Motor 1 (RIGHT)
     gpio_init(RIGHT_ENCODER);
     gpio_set_dir(RIGHT_ENCODER, GPIO_IN);
     gpio_pull_up(RIGHT_ENCODER);
@@ -52,6 +42,15 @@ void init_encoders(void)
                                        GPIO_IRQ_EDGE_FALL,
                                        true,
                                        &encoder_callback_R);
+
+    // Motor 2 (LEFT)
+    gpio_init(LEFT_ENCODER);
+    gpio_set_dir(LEFT_ENCODER, GPIO_IN);
+    gpio_pull_up(LEFT_ENCODER);
+    gpio_set_irq_enabled_with_callback(LEFT_ENCODER,
+                                       GPIO_IRQ_EDGE_FALL,
+                                       true,
+                                       &encoder_callback_L);
 }
 
 // ----------------------------------------------
@@ -119,7 +118,8 @@ void reset_counter()
 // ----------------------------------------------
 float compute_actual_speed(uint32_t pulse_width_us)
 {
-    if (pulse_width_us < 400 || pulse_width_us > 10000000) {
+    if (pulse_width_us < 400 || pulse_width_us > 10000000)
+    {
         return 0.0f;
     }
 
@@ -128,11 +128,11 @@ float compute_actual_speed(uint32_t pulse_width_us)
 
     float pulse_interval_seconds = (float)pulse_width_us * 1e-6f;
     float time_per_rev = pulse_interval_seconds * pulses_per_rev;
-    if (time_per_rev <= 0.0f) return 0.0f;
+    if (time_per_rev <= 0.0f)
+        return 0.0f;
 
     return circumference / time_per_rev;
 }
-
 
 // ----------------------------------------------
 // Telemetry Task
@@ -146,7 +146,7 @@ void telemetry_task()
     while (1)
     {
         total_distance = encoder_counter * distance_per_notch;
-        current_speed  = compute_actual_speed(pulse_width_R);
+        current_speed = compute_actual_speed(pulse_width_R);
 
         snprintf(buffer, sizeof(buffer), "%.3f-%.3f-%.3f\n",
                  total_distance, current_speed, distance);

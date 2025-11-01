@@ -9,11 +9,11 @@
 // ===========================================================
 // CYTRON ROBO PICO MOTOR PIN DEFINITIONS
 // ===========================================================
-// Motor 1 (Left Motor)
+// Motor 1 (Right Motor)
 #define MOTOR1_PWM_PIN 8     // GP8  - PWM speed control
 #define MOTOR1_DIR_PIN 9     // GP9  - Direction control
 
-// Motor 2 (Right Motor)
+// Motor 2 (Left Motor)
 #define MOTOR2_PWM_PIN 10    // GP10 - PWM speed control
 #define MOTOR2_DIR_PIN 11    // GP11 - Direction control
 
