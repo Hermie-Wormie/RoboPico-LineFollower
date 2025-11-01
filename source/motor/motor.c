@@ -30,7 +30,7 @@ float Kd_motor2 = 0.05;
 bool APPLY_PID = false;
 
 const float wheel_circumference = 0.3318;
-const uint8_t pulses_per_revolution = 20;
+const uint8_t pulses_per_revolution = 1;
 const float max_speed_motor1 = 0.5;
 const float max_speed_motor2 = 0.5;
 
@@ -46,6 +46,7 @@ float integral_max = 100, integral_min = -100;
 extern volatile uint32_t pulse_width_L;
 extern volatile uint32_t pulse_width_R;
 extern SemaphoreHandle_t UltrasonicWarn_BinarySemaphore;
+extern float compute_actual_speed(uint32_t pulse_width_us);
 
 // ------------------ BASIC HELPERS ------------------
 
@@ -55,13 +56,6 @@ void reset_PID() {
     integral_motor2 = 0;
     previous_error_motor2 = 0;
     reset_encoder();
-}
-
-float compute_actual_speed(uint32_t pulse_width) {
-    if (pulse_width == 0) return 0;
-    float pulse_interval_seconds = pulse_width * pulse_to_seconds;
-    float time_per_revolution = pulse_interval_seconds * pulses_per_revolution;
-    return wheel_circumference / time_per_revolution;  // m/s
 }
 
 float percent_to_speed(int percent) {
@@ -177,16 +171,6 @@ void motor_task(void *params) {
 // ===================================================
 // DEBUG UTILITIES
 // ===================================================
-void encoder_debug_task(void *params) {
-    vTaskDelay(pdMS_TO_TICKS(3000));
-    while (1) {
-        float s1 = compute_actual_speed(pulse_width_L);
-        float s2 = compute_actual_speed(pulse_width_R);
-        printf("Speed L: %.2f  |  Speed R: %.2f\n", s1, s2);
-        vTaskDelay(pdMS_TO_TICKS(200));
-    }
-}
-
 void disable_warning() {
     DistanceWarning = false;
     printf("Obstacle Cleared\n");

@@ -64,28 +64,30 @@ int main(void)
 
     // ---------------- TASK CREATION ----------------
 
-    xTaskCreate(blink, "LEDTask", 512, NULL, 1, &LED_T);
+    // xTaskCreate(blink, "LEDTask", 512, NULL, 1, &LED_T);
 
-    int GPIO_PIN = 28;
-    xTaskCreate(GPIO_blink, "GPIOTask", 512, &GPIO_PIN, 1, &GPIO_T);
+    // int GPIO_PIN = 28;
+    // xTaskCreate(GPIO_blink, "GPIOTask", 512, &GPIO_PIN, 1, &GPIO_T);
 
-    // Wi-Fi (Access Point) + UDP Telemetry
-    xTaskCreate(start_UDP_server_ap, "UDPTask", 1024, NULL, 3, &UDP_T);
+    // // Wi-Fi (Access Point) + UDP Telemetry
+    // xTaskCreate(start_UDP_server_ap, "UDPTask", 1024, NULL, 3, &UDP_T);
 
     // Motor control
-    xTaskCreate(motor_task, "MotorTask", 1024, NULL, 3, &Motor_T);
+    // xTaskCreate(motor_task, "MotorTask", 1024, NULL, 3, &Motor_T);
     
-    // Line following
-    xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);
+    // // Line following
+    // xTaskCreate(line_following_task, "LineTask", 1024, NULL, 2, &LineFollowing_T);
 
-    // Ultrasonic sensor
-    xTaskCreate(ultrasonic_task, "UltrasonicTask", 1024, NULL, 2, &Ultrasonic_T);
+    // // Ultrasonic sensor
+    // xTaskCreate(ultrasonic_task, "UltrasonicTask", 1024, NULL, 2, &Ultrasonic_T);
 
-    // Barcode decoding
-    xTaskCreate(barcode_width_processor, "BarcodeTask", 2048, NULL, 3, &BarcodesPulse_T);
+    // // Barcode decoding
+    // xTaskCreate(barcode_width_processor, "BarcodeTask", 2048, NULL, 3, &BarcodesPulse_T);
 
-    // Optional telemetry heartbeat
-    xTaskCreate(telemetry_task, "TelemetryTask", 1024, NULL, 1, NULL);
+    // // Optional telemetry heartbeat
+    // xTaskCreate(telemetry_task, "TelemetryTask", 1024, NULL, 1, NULL);
+
+    xTaskCreate(encoder_debug_task, "EncDbg", 512, NULL, 1, NULL);
 
     vTaskStartScheduler();
 
