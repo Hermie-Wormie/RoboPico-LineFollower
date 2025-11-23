@@ -9,6 +9,8 @@
 #include <queue.h>
 #include "semphr.h"
 #include "timers.h"
+#include "barcodes.h"
+#include "motor.h"
 
 // External functions and variables
 void update_motor(float speed_motor1, float speed_motor2, bool clockwise_motor1, bool clockwise_motor2);
@@ -31,6 +33,11 @@ void send_udp_packet(const char *data, const ip_addr_t *client_ip, uint16_t clie
 TimerHandle_t xOffTrackTimer;
 #define OFFTRACKDELAY 300
 #define SAMPLES 5
+
+extern TaskHandle_t LineFollowing_T;
+extern QueueHandle_t turn_command_queue; // Extern for the queue
+extern volatile bool IN_MANEUVER; // Extern for the global flag
+extern volatile bool SCANNING_BARCODE; // NEW: extern for the speed flag
 
 // ------- Simple motor helper functions -------
 
@@ -116,8 +123,8 @@ void line_following_task(void *pvParameters) {
     // Tunable parameters
     const float MAX_SPEED = 20.0f;
     const float MIN_SPEED = 5.0f;
-    const float BASE_SPEED = 9.0f;    // cruising forward speed
-    const float TURN_GAIN = 2.0f;     // how strong the turn effect is (lower = smoother)
+    const float BASE_SPEED = 14.0f;    // cruising forward speed (original = 9.0f)
+    const float TURN_GAIN = 0.3f;     // how strong the turn effect is (lower = smoother)
     const float SMOOTHING = 0.1f;      // 0.1–0.3 recommended; lower = slower acceleration
 
     uint32_t debug_counter = 0;
@@ -125,10 +132,28 @@ void line_following_task(void *pvParameters) {
     float right_speed = BASE_SPEED;
     float target_left = BASE_SPEED;
     float target_right = BASE_SPEED;
+    char turn_command; 
 
     printf("=== LINE FOLLOWING AUTO-START (Smoothed) ===\n");
 
     while (1) {
+
+
+        // Check if a turn command has been received.
+        if (xQueueReceive(turn_command_queue, &turn_command, 0) == pdPASS) {
+            // Command received ('A' or 'Z'). Execute the maneuver.
+            // This call blocks until the turn is complete.
+            motor_execute_barcode_turn(turn_command);
+        
+        }
+
+        // --- 2. Maneuver Skip Check (Step 5) ---
+        // If IN_MANEUVER is true, skip the line following control logic.
+        if (IN_MANEUVER) {
+             // The motors are currently being controlled by motor_execute_barcode_turn.
+             vTaskDelay(pdMS_TO_TICKS(10));
+             continue;
+        }
 
         // --- Safety check ---
         if (xSemaphoreTake(UltrasonicWarn_BinarySemaphore, 0) == pdTRUE) {
@@ -136,6 +161,8 @@ void line_following_task(void *pvParameters) {
             printf("Distance Warning, ending line following\n");
             break;
         }
+
+        float current_base_speed = SCANNING_BARCODE ? 10.0f : 20.0f;
 
         // --- Read IR ---
         int line_state = black_detected;  // 1 = black under sensor, 0 = white
@@ -167,7 +194,7 @@ void line_following_task(void *pvParameters) {
         // --- Debug print every ~500ms ---
         debug_counter++;
         if (debug_counter >= 50) {
-            printf("IR:%d | L:%.1f R:%.1f\n", line_state, left_speed, right_speed);
+            //printf("IR:%d | L:%.1f R:%.1f\n", line_state, left_speed, right_speed);
             debug_counter = 0;
         }
 

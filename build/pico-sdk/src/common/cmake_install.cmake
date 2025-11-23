@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/herma/Documents/Pico-v1.5.1/pico-sdk/src/common
+# Install script for directory: C:/Users/Ewen/.pico-sdk/sdk/1.5.1/src/common
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/FreeRTOS-Kernel")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/FreeRTOS_Project")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,22 +34,22 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/Users/herma/Documents/Pico-v1.5.1/gcc-arm-none-eabi/bin/arm-none-eabi-objdump.exe")
+  set(CMAKE_OBJDUMP "C:/Users/Ewen/.pico-sdk/toolchain/13_2_Rel1/bin/arm-none-eabi-objdump.exe")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/boot_picoboot/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/boot_uf2/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_base/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_usb_reset_interface/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_bit_ops/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_binary_info/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_divider/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_sync/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_time/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_util/cmake_install.cmake")
-  include("C:/Users/herma/Documents/Pico-v1.5.1/FreeRTOS Project/build/pico-sdk/src/common/pico_stdlib/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/boot_picoboot/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/boot_uf2/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_base/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_usb_reset_interface/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_bit_ops/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_binary_info/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_divider/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_sync/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_time/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_util/cmake_install.cmake")
+  include("C:/Users/Ewen/picoLab/RoboPico-LineFollower/build/pico-sdk/src/common/pico_stdlib/cmake_install.cmake")
 
 endif()
 

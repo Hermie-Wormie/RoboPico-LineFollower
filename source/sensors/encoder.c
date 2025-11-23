@@ -6,6 +6,7 @@
 #include "task.h"
 #include "sensors.h"
 #include "queue.h"
+#include "telemetry.h"
 
 // ----------------------------------------------
 // Debounce threshold (µs)
@@ -28,6 +29,7 @@ extern volatile float distance;
 // From wifi.c
 extern ip_addr_t telemetry_ip;
 void send_udp_packet(const char *data, const ip_addr_t *client_ip, uint16_t client_port);
+void send_mqttsn_publish(const char *payload, size_t payload_len);
 
 float total_distance = 0;
 float current_speed = 0;
@@ -141,17 +143,53 @@ float compute_actual_speed(uint32_t pulse_width_us)
 void telemetry_task()
 {
     static const float distance_per_notch = 0.3318f / 20.0f; // 20 pulses per wheel revolution
-    char buffer[32];
+    //char buffer[32];
+    char buffer[128]; // New data fields
 
     while (1)
     {
-        total_distance = encoder_counter * distance_per_notch;
+        // g_telemetry_data.total_distance_cm = encoder_counter * distance_per_notch * 100.0f;
+        // //total_distance = encoder_counter * distance_per_notch;
+        // current_speed = compute_actual_speed(pulse_width_R);
+        g_telemetry_data.total_distance_cm = encoder_counter * distance_per_notch * 100.0f;
         current_speed = compute_actual_speed(pulse_width_R);
+        g_telemetry_data.live_speed_cmps = current_speed;
 
-        snprintf(buffer, sizeof(buffer), "%.3f-%.3f-%.3f\n",
-                 total_distance, current_speed, distance);
+        // snprintf(buffer, sizeof(buffer), "%.3f-%.3f-%.3f\n",
+        //          total_distance, current_speed, distance);
 
-        send_udp_packet(buffer, &telemetry_ip, 2004);
+        // int len = snprintf(buffer, sizeof(buffer), 
+        //          "%.3f,%.3f,%.2f,%d,%.2f,%c,%.1f",
+        //          g_telemetry_data.total_distance_cm,
+        //          current_speed,
+        //          g_telemetry_data.object_distance_cm,
+        //          g_telemetry_data.object_detected, // %d for bool
+        //          g_telemetry_data.object_width_cm,
+        //          g_telemetry_data.last_barcode_command, // %c for char
+        //          g_telemetry_data.filtered_heading_deg
+        //          );
+
+        char safe_barcode_char = g_telemetry_data.last_barcode_command;
+        if (safe_barcode_char == '\0' || safe_barcode_char == ' ') {
+            safe_barcode_char = 'N'; // Use 'N' (for None) instead of null
+        }
+
+        int len = snprintf(buffer, sizeof(buffer), 
+                 "%.3f,%.3f,%.1f,%d,%d,%c,%.2f,%.2f,%d",
+                 g_telemetry_data.live_speed_cmps,       // 1. Live Speed (Requested)
+                 g_telemetry_data.total_distance_cm,     // 2. Distance Travelled (Requested)
+                 g_telemetry_data.filtered_heading_deg,  // 3. Live Heading (Requested)
+                 g_telemetry_data.current_state,         // 4. Current State (int)
+                 g_telemetry_data.line_position_error,   // 5. Real-time line position
+                 //g_telemetry_data.last_barcode_command,  // 6. Barcode command (Requested)
+                 safe_barcode_char,
+                 g_telemetry_data.object_distance_cm,    // 7. Obstacle Distance
+                 g_telemetry_data.object_width_cm,       // 8. Obstacle Width (Requested)
+                 g_telemetry_data.chosen_path            // 9. Chosen Path (int) (Requested)
+                 );
+
+        send_mqttsn_publish(buffer, (size_t)len);
+        //send_udp_packet(buffer, &telemetry_ip, 2004);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

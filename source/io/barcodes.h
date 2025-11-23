@@ -1,7 +1,7 @@
 #include "queue.h"
 #include "semphr.h"
 
-#define THRESHOLD 30000
+//#define THRESHOLD 30000
 #define MIN_THRESHOLD 100
 
 /*
@@ -16,21 +16,25 @@
 
 // From main.c
 extern QueueHandle_t barcodes_queue;
+extern QueueHandle_t turn_command_queue;
 
 // From wifi.c
 extern ip_addr_t remote_ip;
 extern ip_addr_t telemetry_ip;
 void send_udp_packet(const char *data, const ip_addr_t *client_ip, uint16_t client_port);
 
+char decode_character_normalized(uint32_t *pulses_array);
+uint8_t calculate_hamming_distance(uint16_t code1, uint16_t code2);
+
 // barcode.c
 #define WIDTH_IGNORE 500000 // 50ms. Any pulses above this will be treated as environmental and ignored (like when driving for long time and get triggered a random dark object)
-#define MIN_DEBOUNCE 100    // Minimum value to count as a valid interrupt. Might have to be tuned for indiviudal sensors
+#define MIN_DEBOUNCE 30000//100    // Minimum value to count as a valid interrupt. Might have to be tuned for indiviudal sensors
 #define ARRAY_SIZE 29       // Array size to hold barcode. 9(*) + <EmptyWhiteSmallBar> + 9(Char) + <EmptyWhiteSmallBar> + 9(*) = 29
-#define MULTIPLIER 2.9      // Multipler to scale the identified number up. Any pulses above will count as Wide.
-#define CALCULATION_IGNORE_THRESHOLD 1000 // occationally will get values that pass the debouce check, but are clearly wrong. They represent valid small bars, so we still keep them but ignore them for calculations
+#define MULTIPLIER 2.0 //2.0 //2.9      // Multipler to scale the identified number up. Any pulses above will count as Wide.
+#define CALCULATION_IGNORE_THRESHOLD 42000 //23000 //1000 // occationally will get values that pass the debouce check, but are clearly wrong. They represent valid small bars, so we still keep them but ignore them for calculations
 
 // All them barcodes right here, handtyped and checked by me. Screw GPT. Screw Claude. All that wasted time.
-const uint16_t barcodes[44] = {
+static const uint16_t barcodes[44] = {
     0x0034, // 000110100 for '0'
     0x0121, // 100100001 for '1'
     0x0061, // 001100001 for '2' 
@@ -81,7 +85,7 @@ const uint16_t barcodes[44] = {
     0x0094  // 010010100 for '*'
 };
 
-const char barcode_chars[44] = {
+static const char barcode_chars[44] = {
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',    // Indices 0-9
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',    // Indices 10-19
     'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',    // Indices 20-29

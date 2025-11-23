@@ -24,7 +24,7 @@ extern QueueHandle_t barcodes_queue;
 void ir_callback(uint gpio, uint32_t events) {
     bool reading = gpio_get(IR_SENSOR);
     black_detected = (reading == 1);
-    printf("[IR] gpio=%d reading=%d black_detected=%d\n", gpio, reading, black_detected);
+    //printf("[IR] gpio=%d reading=%d black_detected=%d\n", gpio, reading, black_detected);
 }
 
 
